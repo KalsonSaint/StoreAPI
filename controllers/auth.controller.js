@@ -1,8 +1,10 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User = require("../models/user.model");
+require("dotenv/config");
+
 const { TOKEN_KEY } = process.env;
-const secret = TOKEN_KEY || "AASD76AWSQW9ASF00ASFBASF8978A65A8FASF78";
+const secret = TOKEN_KEY;
 
 // Register User Logic
 exports.register = async (req, res) => {
