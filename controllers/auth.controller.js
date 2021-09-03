@@ -85,7 +85,41 @@ exports.login = async (req, res) => {
   try {
     // Get User Input
     const { email, password } = req.body;
-    console.log(email);
+    const insensitiveEmail = new RegExp(["^", email, "$"].join(""), "i");
+    let user;
+
+    if (email) {
+      user = await User.findOne({
+        $and: [{ email: insensitiveEmail }, { email: { $ne: null } }],
+      });
+    }
+    const passwordIsValid = bcrypt.compareSync(password, user.password);
+
+    if (!user || !passwordIsValid) {
+      return res.status(404).send({
+        message: "Invalid email or password",
+        status: "error",
+        data: null,
+      });
+    }
+
+    // Create Token
+    const token = jwt.sign({ id: user._id }, secret, { expiresIn: "1h" });
+
+    return res.status(200).send({
+      message: "User retrieved successfully",
+      status: "success",
+      data: {
+        user: {
+          id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          accountType: user.accountType,
+        },
+      },
+      accessToken: token,
+    });
   } catch (err) {
     console.error(err);
     return res.status(500).send({
