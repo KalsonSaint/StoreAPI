@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
 require("dotenv/config");
 
 // ENV. VARIABLES
@@ -14,14 +15,13 @@ const db = DB_URL;
 // Import Routes
 const authRoute = require("./routes/auth.route");
 
-// ROUTES
-app.use("api/v1/auth", authRoute);
-
 // MIDDLEWARES
 app.use(cors());
-app.use(express.json({ limit: "50mb" }));
+app.use(express.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
+// ROUTES
+app.use("/api/v1/auth", authRoute);
 
 // Homepage
 app.get("/", (req, res) => {
